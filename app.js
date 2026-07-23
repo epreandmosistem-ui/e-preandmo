@@ -839,7 +839,7 @@ async function loadPemesanan() {
         <div>
           <span class="booking-label">
             <i class="fa-solid fa-qrcode"></i>
-            QR Pintu Laboratorium
+            QR Ruang Laboratorium
           </span>
 
           <button
