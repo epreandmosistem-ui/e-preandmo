@@ -52,7 +52,7 @@
             <label for="nim" class="text-xs font-bold uppercase text-slate-700">NIM Mahasiswa</label>
             <input id="nim" class="field mt-2" placeholder="Contoh: 221501001" autocomplete="username" required>
             <label for="studentPassword" class="block text-xs font-bold uppercase text-slate-700 mt-4">Kata sandi</label>
-            <input id="studentPassword" type="password" class="field mt-2" placeholder="Masukkan Sandi" autocomplete="current-password">
+            <input id="studentPassword" type="password" class="field mt-2" placeholder="Kosongkan hanya untuk akun lama" autocomplete="current-password">
           </div>
           <div id="formStaffLogin" class="hidden space-y-4">
             <div>
@@ -70,7 +70,7 @@
             <button type="button" onclick="openScanner()" class="btn btn-primary w-full">Scan QR Pengguna Khusus</button>
             <p class="text-xs text-slate-500">QR khusus dibuat dan dicetak oleh admin. Setelah login, isi formulir registrasi penggunaan.</p>
           </div>
-          <p id="loginHelp" class="text-xs text-slate-600">Akun mahasiswa menggunakan NIM dan kata sandi.</p>
+          <p id="loginHelp" class="text-xs text-slate-600">Akun mahasiswa baru menggunakan NIM dan kata sandi. Akun lama tetap dapat masuk tanpa kata sandi sampai dimigrasikan admin.</p>
           <div id="authStatus" class="sr-only" role="status" aria-live="polite"></div>
           <button class="btn btn-danger w-full text-base" type="submit">Masuk E-Pre&Mo</button>
           <button type="button" class="btn btn-light w-full" onclick="toggleRegistration(true)">Belum punya akun? Daftar mandiri</button>
