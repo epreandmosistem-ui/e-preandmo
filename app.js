@@ -47,7 +47,7 @@ const menuByRole = {
 };
 
 function gs(fn, ...args) {
-  if (!API_URL || API_URL === 'https://script.google.com/macros/s/AKfycbzf4QVA0lmEnJQPyUi4w3tgFglRcNbpCrr1LZIRRogQG9LAIpQBRGc6xX223_dj8KIL/exec') {
+  if (!API_URL || API_URL === 'ISI_URL_WEB_APP_APPS_SCRIPT_ANDA') {
     return Promise.resolve({ success: false, message: 'API_URL belum diisi dengan URL Web App Google Apps Script.' });
   }
   return new Promise((resolve, reject) => {
