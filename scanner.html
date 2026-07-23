@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Scan QR - E-Pre&Mo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:#0B3A75;color:#fff;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px}
+    .box{max-width:480px;width:100%;text-align:center}
+    .scan{border:3px solid #fff;border-radius:18px;padding:12px;background:rgba(255,255,255,.08);min-height:290px;display:flex;align-items:center;justify-content:center}
+    #reader{width:100%}
+    #reader video{border-radius:12px!important}
+    button{border:0;border-radius:10px;padding:12px 16px;font-weight:700;color:#fff;background:#E21B2D;margin-top:10px;cursor:pointer}
+    button.sec{background:#fff;color:#0B3A75}
+    select,input{width:100%;border:0;border-radius:10px;padding:12px;margin-top:10px}
+    input[type=file]{background:#fff;color:#0B3A75}
+    .hint{font-size:13px;opacity:.88;line-height:1.5}
+    .err{background:rgba(226,27,45,.18);border:1px solid rgba(255,255,255,.25);padding:10px;border-radius:10px}
+    .ok{background:rgba(34,197,94,.18);border:1px solid rgba(255,255,255,.25);padding:10px;border-radius:10px}
+    .panel{margin-top:12px;padding:12px;border-radius:14px;background:rgba(255,255,255,.1);text-align:left}
+    .panel h3{font-size:13px;margin:0 0 6px}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>E-Pre&Mo QR Scanner</h2>
+    <p class="hint">Jika izin kamera ditolak, gunakan pilihan <b>Scan dari Gambar QR</b>. Opsi itu tidak membutuhkan izin kamera.</p>
+
+    <select id="cameraSelect"><option value="">Kamera belakang / otomatis</option></select>
+    <div class="scan"><div id="reader"></div></div>
+    <p id="status" class="hint">Tekan mulai kamera atau unggah gambar QR.</p>
+
+    <button onclick="startScanner()">Mulai Kamera</button>
+    <button class="sec" onclick="stopScanner()">Berhenti</button>
+
+    <div class="panel">
+      <h3>Scan dari Gambar QR</h3>
+      <p class="hint">Ambil foto/screenshot QR, lalu pilih file gambar di sini.</p>
+      <input id="qrImage" type="file" accept="image/*" onchange="scanImageFile(this.files[0])">
+    </div>
+
+    <div class="panel">
+      <h3>Input Manual</h3>
+      <input id="manualCode" placeholder="Masukkan kode QR secara manual">
+      <button class="sec" onclick="submitManual()">Gunakan Kode Manual</button>
+    </div>
+
+    <button onclick="window.close()">Tutup</button>
+  </div>
+
+  <script>
+    var scanner=null, started=false, last=0;
+    var sel=document.getElementById("cameraSelect");
+    var statusEl=document.getElementById("status");
+
+    function setStatus(text, className){
+      statusEl.className=className||"hint";
+      statusEl.innerHTML=text;
+    }
+
+    function ensureScanner(){
+      if(!window.Html5Qrcode){
+        setStatus("Library scanner belum termuat. Cek koneksi internet/CDN.", "err");
+        return null;
+      }
+      if(!scanner) scanner=new Html5Qrcode("reader");
+      return scanner;
+    }
+
+    function saveResult(text){
+      if(!text || Date.now()-last<1800) return;
+      last=Date.now();
+      try{
+        localStorage.setItem("epremo_qr_result", JSON.stringify({value:text, source:window.currentQrSource||"camera", ts:Date.now()}));
+        setStatus("QR terdeteksi. Data tersimpan, tab akan ditutup.", "ok");
+        setTimeout(function(){ window.close(); }, 1200);
+      }catch(e){
+        setStatus("QR terdeteksi, tetapi gagal menyimpan hasil: " + e.message, "err");
+      }
+    }
+
+    function loadCameras(){
+      if(!window.Html5Qrcode){
+        setStatus("Library scanner belum termuat. Cek koneksi internet/CDN. Anda masih bisa memakai input manual.", "err");
+        return;
+      }
+      Html5Qrcode.getCameras().then(function(cams){
+        if(cams && cams.length){
+          sel.innerHTML=cams.map(function(c,i){
+            return '<option value="'+c.id+'">'+(c.label || ("Kamera "+(i+1)))+'</option>';
+          }).join("");
+          var back=cams.find(function(c){ return /back|rear|environment|belakang/i.test(c.label); });
+          if(back) sel.value=back.id;
+          setStatus("Kamera ditemukan. Tekan mulai kamera, atau unggah gambar QR.", "hint");
+        }else{
+          setStatus("Tidak ada kamera terdeteksi. Gunakan scan dari gambar QR atau input manual.", "err");
+        }
+      }).catch(function(e){
+        setStatus("Kamera gagal diakses: " + explain(e) + ". Gunakan scan dari gambar QR atau input manual.", "err");
+      });
+    }
+
+    function startScanner(){
+      if(started) return;
+      if(!window.isSecureContext){
+        setStatus("Kamera hanya bisa dipakai pada HTTPS. Buka dari GitHub Pages HTTPS.", "err");
+        return;
+      }
+      if(!navigator.mediaDevices){
+        setStatus("Browser belum mendukung akses kamera. Gunakan scan dari gambar QR atau input manual.", "err");
+        return;
+      }
+      var sc=ensureScanner();
+      if(!sc) return;
+      var cameraId=sel.value;
+      var config={fps:10, qrbox:{width:230,height:230}, aspectRatio:1.0};
+      var target=cameraId ? {deviceId:{exact:cameraId}} : {facingMode:"environment"};
+      setStatus("Memulai kamera...", "hint");
+      window.currentQrSource="camera";
+      sc.start(target, config, saveResult, function(){}).then(function(){
+        started=true;
+        setStatus("Arahkan QR ke dalam kotak scanner.", "hint");
+      }).catch(function(e){
+        setStatus("Kamera gagal: " + explain(e) + "<br><small>Solusi cepat: pilih foto/screenshot QR pada menu Scan dari Gambar QR.</small>", "err");
+      });
+    }
+
+    function stopScanner(){
+      if(scanner && started){
+        scanner.stop().then(function(){
+          started=false;
+          setStatus("Scanner berhenti.", "hint");
+        }).catch(function(){ started=false; });
+      }
+    }
+
+    function scanImageFile(file){
+      if(!file) return;
+      var sc=ensureScanner();
+      if(!sc) return;
+      stopScanner();
+      setStatus("Membaca gambar QR...", "hint");
+      window.currentQrSource="image";
+      sc.scanFile(file, true).then(saveResult).catch(function(){
+        setStatus("QR tidak terbaca dari gambar. Pastikan gambar jelas, tidak buram, dan QR terlihat penuh.", "err");
+      });
+    }
+
+    function submitManual(){
+      var value=document.getElementById("manualCode").value.trim();
+      if(!value){
+        setStatus("Masukkan kode QR terlebih dahulu.", "err");
+        return;
+      }
+      window.currentQrSource="manual";
+      saveResult(value);
+    }
+
+    function explain(e){
+      var m=(e && e.message ? e.message : String(e || "")).toLowerCase();
+      if(m.indexOf("permission")>=0 || m.indexOf("notallowed")>=0) return "izin kamera ditolak";
+      if(m.indexOf("notfound")>=0 || m.indexOf("devicesnotfound")>=0) return "kamera tidak ditemukan";
+      if(m.indexOf("notreadable")>=0 || m.indexOf("track")>=0) return "kamera sedang dipakai aplikasi lain";
+      if(m.indexOf("overconstrained")>=0) return "kamera belakang tidak cocok, pilih kamera lain";
+      return e && e.message ? e.message : String(e);
+    }
+
+    window.addEventListener("load", loadCameras);
+    window.addEventListener("beforeunload", stopScanner);
+  </script>
+</body>
+</html>

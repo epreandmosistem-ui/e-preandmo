@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Pre&Mo - Pendidikan Informatika</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="tailwind-config.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="loginPage" class="min-h-screen grid lg:grid-cols-[1fr_460px] bg-white">
+    <section class="relative min-h-[42vh] lg:min-h-screen bg-epBlue text-white overflow-hidden">
+      <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(226,27,45,.88),rgba(11,58,117,.8)_42%,rgba(8,43,88,.95))]"></div>
+      <div class="relative z-10 h-full flex flex-col justify-between p-8 lg:p-12">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-lg bg-white/12 border border-white/30 flex items-center justify-center overflow-hidden">
+            <img data-logo class="hidden w-full h-full object-contain p-1" alt="Logo E-Pre&Mo">
+            <span data-logo-fallback class="text-[10px] font-bold text-center leading-tight">RUANG<br>LOGO</span>
+          </div>
+          <div>
+            <h1 class="text-3xl font-extrabold tracking-tight">E-Pre&Mo</h1>
+            <p class="text-sm font-semibold text-blue-100">Pendidikan Informatika</p>
+          </div>
+        </div>
+        <div class="max-w-2xl">
+          <p class="text-xs uppercase tracking-[.22em] text-blue-100 font-bold mb-4">Electronic Presence & Monitoring</p>
+          <h2 class="text-4xl lg:text-6xl font-extrabold leading-tight">Presensi dan monitoring laboratorium komputer berbasis QR Code.</h2>
+          <p class="mt-5 text-blue-50 max-w-xl">Data penggunaan ruangan, posisi komputer, dosen penanggung jawab, serta keperluan materi, praktik, dan penelitian dipantau secara real-time.</p>
+        </div>
+        <p class="text-xs text-blue-100">Program Studi Pendidikan Informatika, Fakultas Saintek, Universitas IVET Semarang</p>
+      </div>
+    </section>
+    <section class="flex items-center justify-center p-6 lg:p-10">
+      <div class="w-full max-w-md">
+        <div class="mb-8">
+          <h2 class="text-2xl font-extrabold text-slate-900">Masuk Aplikasi</h2>
+          <p class="text-sm text-slate-500 mt-1">Pilih jenis pengguna sesuai akses sistem.</p>
+        </div>
+        <div class="bg-slate-100 p-1 rounded-lg grid grid-cols-2 gap-1 mb-6" role="tablist" aria-label="Jenis pengguna">
+          <button type="button" id="btnMahasiswaTab" role="tab" aria-selected="true" onclick="switchLoginTab('mahasiswa')" class="flex-1 btn bg-white text-epBlue"><i class="fa-solid fa-user-graduate mr-2" aria-hidden="true"></i>Mahasiswa</button>
+          <button type="button" id="btnKhususTab" role="tab" aria-selected="false" onclick="switchLoginTab('khusus')" class="flex-1 btn text-slate-500"><i class="fa-solid fa-id-badge mr-2" aria-hidden="true"></i>Pengguna Khusus</button>
+          <button type="button" id="btnDosenTab" role="tab" aria-selected="false" onclick="switchLoginTab('dosen')" class="flex-1 btn text-slate-500"><i class="fa-solid fa-user-tie mr-2" aria-hidden="true"></i>Dosen</button>
+          <button type="button" id="btnAdminTab" role="tab" aria-selected="false" onclick="switchLoginTab('admin')" class="flex-1 btn text-slate-500"><i class="fa-solid fa-user-shield mr-2" aria-hidden="true"></i>Admin</button>
+        </div>
+        <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4" aria-describedby="loginHelp">
+          <div id="formMahasiswaLogin">
+            <label for="nim" class="text-xs font-bold uppercase text-slate-700">NIM Mahasiswa</label>
+            <input id="nim" class="field mt-2" placeholder="Contoh: 221501001" autocomplete="username" required>
+            <label for="studentPassword" class="block text-xs font-bold uppercase text-slate-700 mt-4">Kata sandi</label>
+            <input id="studentPassword" type="password" class="field mt-2" placeholder="Kosongkan hanya untuk akun lama" autocomplete="current-password">
+          </div>
+          <div id="formStaffLogin" class="hidden space-y-4">
+            <div>
+              <label for="username" class="text-xs font-bold uppercase text-slate-700">Username</label>
+              <input id="username" class="field mt-2" placeholder="Username" autocomplete="username">
+            </div>
+            <div>
+              <label for="password" class="text-xs font-bold uppercase text-slate-700">Kata sandi</label>
+              <input id="password" type="password" class="field mt-2" placeholder="Kata sandi" autocomplete="current-password">
+            </div>
+          </div>
+          <div id="formKhususLogin" class="hidden space-y-4">
+            <label class="text-xs font-bold uppercase text-slate-500">QR Login Pengguna Khusus</label>
+            <textarea id="specialQrText" class="field mt-2" placeholder="Tempel hasil scan QR khusus dari admin"></textarea>
+            <button type="button" onclick="openScanner()" class="btn btn-primary w-full">Scan QR Pengguna Khusus</button>
+            <p class="text-xs text-slate-500">QR khusus dibuat dan dicetak oleh admin. Setelah login, isi formulir registrasi penggunaan.</p>
+          </div>
+          <p id="loginHelp" class="text-xs text-slate-600">Akun mahasiswa baru menggunakan NIM dan kata sandi. Akun lama tetap dapat masuk tanpa kata sandi sampai dimigrasikan admin.</p>
+          <div id="authStatus" class="sr-only" role="status" aria-live="polite"></div>
+          <button class="btn btn-danger w-full text-base" type="submit">Masuk E-Pre&Mo</button>
+          <button type="button" class="btn btn-light w-full" onclick="toggleRegistration(true)">Belum punya akun? Daftar mandiri</button>
+        </form>
+        <form id="registrationForm" onsubmit="handleRegistration(event)" class="hidden space-y-3" aria-labelledby="registrationTitle">
+          <h3 id="registrationTitle" class="font-extrabold text-xl">Registrasi akun baru</h3>
+          <label for="regRole" class="font-bold text-sm">Jenis akun</label>
+          <select id="regRole" class="field" onchange="toggleRegistrationFields()" required><option value="mahasiswa">Mahasiswa</option><option value="dosen">Dosen</option></select>
+          <label for="regNama" class="font-bold text-sm">Nama lengkap</label><input id="regNama" class="field" autocomplete="name" required minlength="3">
+          <label for="regIdentifier" class="font-bold text-sm"><span id="regIdentifierLabel">NIM</span></label><input id="regIdentifier" class="field" required pattern="[A-Za-z0-9._-]{5,}">
+          <label for="regUsername" class="font-bold text-sm">Username</label><input id="regUsername" class="field" autocomplete="username" required pattern="[A-Za-z0-9._-]{4,40}">
+          <div id="regSemesterWrap"><label for="regSemester" class="font-bold text-sm">Semester</label><select id="regSemester" class="field"><option value="1">Semester 1</option><option value="2">Semester 2</option><option value="3">Semester 3</option><option value="4">Semester 4</option><option value="5">Semester 5</option><option value="6">Semester 6</option><option value="7">Semester 7</option><option value="8">Semester 8</option><option value="9">Semester 9</option><option value="10">Semester 10</option><option value="11">Semester 11</option><option value="12">Semester 12</option><option value="13">Semester 13</option><option value="14">Semester 14</option></select></div>
+          <label for="regEmail" class="font-bold text-sm">Email</label><input id="regEmail" type="email" class="field" autocomplete="email">
+          <label for="regPassword" class="font-bold text-sm">Kata sandi</label><input id="regPassword" type="password" class="field" autocomplete="new-password" minlength="8" aria-describedby="passwordHelp" required>
+          <p id="passwordHelp" class="text-xs text-slate-600">Minimal 8 karakter serta memuat huruf dan angka.</p>
+          <label for="regPasswordConfirm" class="font-bold text-sm">Ulangi kata sandi</label><input id="regPasswordConfirm" type="password" class="field" autocomplete="new-password" minlength="8" required>
+          <button class="btn btn-danger w-full" type="submit">Buat akun</button>
+          <button class="btn btn-light w-full" type="button" onclick="toggleRegistration(false)">Kembali ke login</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <div id="appPage" class="hidden min-h-screen">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-epBlue text-white z-30 flex flex-col">
+      <div class="h-20 px-5 flex items-center gap-3 border-b border-white/10">
+        <div class="w-12 h-12 rounded-lg border border-white/30 bg-white/10 flex items-center justify-center overflow-hidden">
+          <img data-logo class="hidden w-full h-full object-contain p-1" alt="Logo E-Pre&Mo">
+          <span data-logo-fallback class="text-[9px] font-bold leading-tight text-center">RUANG<br>LOGO</span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-extrabold">E-Pre&Mo</h1>
+          <p class="text-xs text-blue-100 font-semibold">Pendidikan Informatika</p>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="bg-white/10 border border-white/10 rounded-lg p-3">
+          <p id="navUserName" class="font-bold text-sm truncate">Pengguna</p>
+          <p id="navUserRole" class="text-[10px] uppercase tracking-widest text-blue-100">Role</p>
+        </div>
+      </div>
+      <nav id="sidebarMenu" class="flex-1 px-3 space-y-1 text-sm"></nav>
+      <button onclick="logout()" class="m-4 btn bg-white/10 hover:bg-epRed text-white text-left"><i class="fa-solid fa-right-from-bracket mr-2"></i>Keluar</button>
+    </aside>
+    <div id="mobileOverlay" onclick="closeMobileMenu()" class="hidden fixed inset-0 bg-slate-950/55 opacity-0 z-40 md:hidden"></div>
+
+    <main class="app-main ml-64 min-h-screen flex flex-col">
+      <header class="app-header h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-20">
+        <div class="flex items-start gap-3 min-w-0">
+          <button onclick="toggleMobileMenu()" class="md:hidden btn btn-light px-3 py-2 shrink-0" aria-label="Buka menu"><i class="fa-solid fa-bars"></i></button>
+          <div class="min-w-0">
+            <h2 id="pageTitle" class="app-title text-xl font-extrabold text-slate-900 truncate">Dashboard</h2>
+            <p class="app-subtitle text-xs text-slate-500">Sistem Informasi Presensi dan Monitoring Penggunaan Ruangan Laboratorium Komputer</p>
+          </div>
+        </div>
+        <div class="app-actions flex items-center gap-4 text-xs font-bold shrink-0">
+          <div><span class="status-dot bg-red-600 mr-2"></span><span class="session-label">Sesi Aktif </span><span id="clock">--:--:--</span></div>
+          <button onclick="refreshCurrentView()" class="btn btn-light"><i class="fa-solid fa-rotate md:mr-2"></i><span class="hidden md:inline">Refresh</span></button>
+          <button onclick="logout()" class="btn btn-danger md:hidden"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </header>
+
+      <div class="content-wrap flex-1 p-6 pb-4">
+        <section id="view-dashboard" class="view-section active"></section>
+        <section id="view-monitoring" class="view-section"></section>
+        <section id="view-presensi" class="view-section"></section>
+        <section id="view-pemesanan" class="view-section"></section>
+        <section id="view-qr-komputer" class="view-section"></section>
+        <section id="view-pembuatan-qr" class="view-section"></section>
+        <section id="view-laporan" class="view-section"></section>
+        <section id="view-profil" class="view-section"></section>
+        <section id="view-mahasiswa" class="view-section"></section>
+        <section id="view-dosen" class="view-section"></section>
+        <section id="view-pengguna-khusus" class="view-section"></section>
+        <section id="view-ruangan" class="view-section"></section>
+      </div>
+
+      <footer class="app-footer bg-epBlue text-white px-8 py-5 grid md:grid-cols-3 gap-4 text-sm">
+        <div class="flex gap-3">
+          <div class="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden">
+            <img data-logo class="hidden w-full h-full object-contain p-1" alt="Logo E-Pre&Mo">
+            <span data-logo-fallback class="text-[9px] text-center leading-tight">LOGO</span>
+          </div>
+          <div>
+            <p class="font-bold">Program Studi Pendidikan Informatika</p>
+            <p>Fakultas Saintek</p>
+            <p>Universitas IVET Semarang</p>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <i class="fa-solid fa-location-dot mt-1"></i>
+          <p>X9HX+RJQ, Jl. Pawiyatan Luhur IV No.16, Bendan Duwur, Kec. Gajahmungkur, Kota Semarang, Jawa Tengah 50235</p>
+        </div>
+        <div class="space-y-1">
+          <p><i class="fa-solid fa-phone mr-2"></i><a class="underline" target="_blank" href="https://www.google.com/search?q=alamat+ivet&rlz=1C1ONGR_enID1086ID1086&oq=alamat+ivet&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQABiABDIICAIQABgWGB4yCAgDEAAYFhgeMgoIBBAAGIAEGKIEMgcIBRAAGO8F0gEIMzUwN2owajeoAgCwAgA&sourceid=chrome&ie=UTF-8#">0858-0000-8145</a></p>
+          <p><i class="fa-solid fa-globe mr-2"></i><a class="underline" target="_blank" href="http://pmb.unisvet.ac.id/">pmb.unisvet.ac.id</a></p>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <div id="loading" class="hidden fixed inset-0 z-50 bg-white/70 backdrop-blur-sm items-center justify-center">
+    <div class="card p-6 text-center">
+      <div class="w-10 h-10 mx-auto rounded-full border-4 border-slate-200 border-t-epRed animate-spin"></div>
+      <p class="mt-3 text-sm font-bold text-slate-600">Memuat data...</p>
+    </div>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>
