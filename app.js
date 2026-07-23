@@ -13,6 +13,7 @@ let DEPLOYMENT_URL = 'scanner.html';
 let lastQrTs = 0;
 let pendingRoomQr = '';
 let pendingRoomCode = '';
+let attendanceData = [];
 
 const menuByRole = {
   admin: [
@@ -485,6 +486,9 @@ async function shutdownSelected(no) {
 
 async function loadPresensi() {
   const res = await gs('getPresensiList', token, 150);
+  attendanceData = res.data || [];
+  const semesters = [...new Set(attendanceData.filter(d => d.role === 'mahasiswa' && d.semester).map(d => String(d.semester)))].sort((a, b) => Number(a) - Number(b));
+  const selectedSemester = localStorage.getItem('epremo_presensi_semester') || '';
   document.getElementById('view-presensi').innerHTML = `
     <div class="card p-5 mb-4">
       <div class="flex justify-between gap-3 flex-wrap">
@@ -496,7 +500,55 @@ async function loadPresensi() {
       </div>
       <div id="qrPreview" class="mt-4"></div>
     </div>
-    ${table(['Tanggal','Jam Masuk','Jam Keluar','NIM/NIDN','Nama','Role','Ruangan','Komputer','Keperluan','Status','Sumber','Waktu Server','Lokasi'], (res.data || []).map(d => [d.tanggal,d.jamMasuk,d.jamKeluar,d.identifier,d.nama,d.role,d.kodeRuangan,pad2(d.nomorKomputer || ''),d.keperluan,d.status,d.sumberScan || '-',d.timestampServer || '-',d.statusLokasi || '-']))}`;
+    <div class="card p-4 mb-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+      <label for="attendanceSemesterFilter" class="font-bold text-sm">Tampilkan presensi semester</label>
+      <select id="attendanceSemesterFilter" class="field sm:max-w-xs" onchange="setAttendanceSemesterFilter(this.value)">
+        <option value="">Semua semester</option>
+        ${semesters.map(s => `<option value="${s}" ${s === selectedSemester ? 'selected' : ''}>Semester ${s}</option>`).join('')}
+      </select>
+    </div>
+    <div id="attendanceBySemester"></div>`;
+  renderAttendanceBySemester(selectedSemester);
+}
+
+function setAttendanceSemesterFilter(value) {
+  localStorage.setItem('epremo_presensi_semester', value);
+  renderAttendanceBySemester(value);
+}
+
+function renderAttendanceBySemester(selectedSemester) {
+  const target = document.getElementById('attendanceBySemester');
+  if (!target) return;
+  const students = attendanceData.filter(d =>
+    d.role === 'mahasiswa' &&
+    (!selectedSemester || String(d.semester) === String(selectedSemester))
+  );
+  const otherUsers = selectedSemester ? [] : attendanceData.filter(d => d.role !== 'mahasiswa');
+  const groups = {};
+  students.forEach(item => {
+    const semester = item.semester ? String(item.semester) : 'Belum tercatat';
+    if (!groups[semester]) groups[semester] = [];
+    groups[semester].push(item);
+  });
+  const headers = ['Tanggal','Jam Masuk','Jam Keluar','NIM','Nama','Semester','Ruangan','Komputer','Keperluan','Status','Sumber','Waktu Server','Lokasi'];
+  const row = d => [d.tanggal,d.jamMasuk,d.jamKeluar,d.identifier,d.nama,d.semester || '-',d.kodeRuangan,pad2(d.nomorKomputer || ''),d.keperluan,d.status,d.sumberScan || '-',d.timestampServer || '-',d.statusLokasi || '-'];
+  const semesterSections = Object.keys(groups)
+    .sort((a, b) => Number(a) - Number(b))
+    .map(semester => `
+      <section class="mb-5" aria-labelledby="semester-presensi-${semester}">
+        <div class="flex items-center justify-between gap-3 mb-2 px-1">
+          <h3 id="semester-presensi-${semester}" class="font-extrabold text-lg text-epBlue">Semester ${semester}</h3>
+          <span class="text-xs font-bold text-slate-500">${groups[semester].length} catatan</span>
+        </div>
+        ${table(headers, groups[semester].map(row))}
+      </section>`).join('');
+  const otherSection = otherUsers.length ? `
+    <section class="mb-5" aria-labelledby="presensi-pengguna-lain">
+      <h3 id="presensi-pengguna-lain" class="font-extrabold text-lg text-epBlue mb-2 px-1">Dosen dan Pengguna Lain</h3>
+      ${table(headers, otherUsers.map(row))}
+    </section>` : '';
+  target.innerHTML = semesterSections + otherSection ||
+    '<div class="card p-6 text-center text-slate-500">Belum ada data presensi pada semester yang dipilih.</div>';
 }
 
 function openScanner() {
@@ -839,7 +891,7 @@ async function loadPemesanan() {
         <div>
           <span class="booking-label">
             <i class="fa-solid fa-qrcode"></i>
-            QR Ruang Laboratorium
+            QR Ruangan Laboratorium
           </span>
 
           <button
