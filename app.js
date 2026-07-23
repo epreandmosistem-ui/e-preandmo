@@ -1145,7 +1145,7 @@ async function loadPembuatanQr() {
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
           <h3 class="font-extrabold text-lg">Pembuatan QR Code</h3>
-          <p class="text-sm text-slate-500">Buat QR permanen untuk ruangan lab, meja komputer, dan login pengguna khusus.</p>
+          <p class="text-sm text-slate-500">Buat QR paten untuk pintu ruangan, meja komputer, dan login pengguna khusus.</p>
         </div>
         <button onclick="window.print()" class="btn btn-danger">Cetak Halaman QR</button>
       </div>
