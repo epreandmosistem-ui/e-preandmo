@@ -1,5 +1,29 @@
     * { box-sizing: border-box; }
-    body { font-family: Inter, system-ui, sans-serif; background: #F5F7FB; color: #172033; }
+body { font-family: Inter, system-ui, sans-serif; background: #F5F7FB; color: #172033; }
+#loginPage {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(rgba(5, 24, 49, .22), rgba(5, 24, 49, .35)),
+    url("assets/laboratorium-ivet.jpeg") center center / cover no-repeat;
+}
+.login-hero { background: transparent; }
+.login-form-panel {
+  background: rgba(255, 255, 255, .92);
+  border-left: 1px solid rgba(255, 255, 255, .55);
+  box-shadow: -18px 0 48px rgba(5, 24, 49, .22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+@media (max-width: 1023px) {
+  #loginPage { background-position: 58% center; }
+  .login-form-panel {
+    background: rgba(255, 255, 255, .95);
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, .65);
+    box-shadow: 0 -18px 48px rgba(5, 24, 49, .2);
+  }
+}
     .view-section { display: none; }
     .view-section.active { display: block; }
     .nav-active { background: #E21B2D; color: #fff; box-shadow: 0 10px 22px rgba(226,27,45,.24); }
