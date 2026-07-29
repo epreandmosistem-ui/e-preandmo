@@ -1,6 +1,6 @@
 let currentUser = null;
 let token = localStorage.getItem('epremo_token') || '';
-const API_URL = 'https://script.google.com/macros/s/AKfycbzf4QVA0lmEnJQPyUi4w3tgFglRcNbpCrr1LZIRRogQG9LAIpQBRGc6xX223_dj8KIL/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxwnOfj-Xn6M6haoLfHqTd3rIYArbcKKjl8G_lFdM5XoMNdL_OMz5OAk380d4zR8pLN/exec';
 let currentView = 'dashboard';
 let rooms = [];
 let subjects = [];
@@ -552,7 +552,7 @@ function renderAttendanceBySemester(selectedSemester) {
 }
 
 function openScanner() {
-  window.open(DEPLOYMENT_URL, '_blank');
+  window.location.assign(DEPLOYMENT_URL);
 }
 
 function checkQrResult() {
@@ -891,7 +891,7 @@ async function loadPemesanan() {
         <div>
           <span class="booking-label">
             <i class="fa-solid fa-qrcode"></i>
-            QR Ruangan Laboratorium
+            QR Pintu Laboratorium
           </span>
 
           <button
@@ -900,7 +900,7 @@ async function loadPemesanan() {
             class="btn btn-primary w-full"
           >
             <i class="fa-solid fa-camera mr-2"></i>
-            Scan QR Ruang Lab
+            Scan QR Pintu Lab
           </button>
 
           <div
@@ -1007,7 +1007,7 @@ async function submitRoomUsage(e) {
   e.preventDefault();
 
   if (!pendingRoomQr) {
-    Swal.fire('QR Belum Ada', 'Scan QR ruang lab terlebih dahulu.', 'warning');
+    Swal.fire('QR Belum Ada', 'Scan QR pintu lab terlebih dahulu.', 'warning');
     return;
   }
 
@@ -1145,7 +1145,7 @@ async function loadPembuatanQr() {
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
           <h3 class="font-extrabold text-lg">Pembuatan QR Code</h3>
-          <p class="text-sm text-slate-500">Buat QR permanen untuk ruangan lab, meja komputer, dan login pengguna khusus.</p>
+          <p class="text-sm text-slate-500">Buat QR paten untuk pintu ruangan, meja komputer, dan login pengguna khusus.</p>
         </div>
         <button onclick="window.print()" class="btn btn-danger">Cetak Halaman QR</button>
       </div>
@@ -1803,17 +1803,14 @@ setInterval(checkQrResult, 1200);
 loadAppLogo();
 
 const savedUser = localStorage.getItem('epremo_user');
-const navigationEntry = performance.getEntriesByType('navigation')[0];
-const isPageRefresh = navigationEntry
-  ? navigationEntry.type === 'reload'
-  : performance.navigation && performance.navigation.type === 1;
-
-if (token && savedUser && isPageRefresh) {
-  currentUser = JSON.parse(savedUser);
-  bootApp(false);
-} else if (!isPageRefresh) {
-  token = '';
-  currentUser = null;
-  localStorage.removeItem('epremo_token');
-  localStorage.removeItem('epremo_user');
+if (token && savedUser) {
+  try {
+    currentUser = JSON.parse(savedUser);
+    bootApp(false);
+  } catch (err) {
+    token = '';
+    currentUser = null;
+    localStorage.removeItem('epremo_token');
+    localStorage.removeItem('epremo_user');
+  }
 }
