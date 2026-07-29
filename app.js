@@ -265,7 +265,7 @@ async function loadDashboard() {
     <div class="grid lg:grid-cols-[1fr_360px] gap-4 md:gap-6">
       <div>
         <div class="card p-5 md:p-6 mb-4 md:mb-6 bg-gradient-to-r from-epBlue to-epBlue2 text-white">
-          <p class="text-sm text-blue-100 font-semibold">Pengembangan Sistem Informasi Presensi dan Monitoring Penggunaan Ruangan Laboratorium Komputer Berbasis QR Code</p>
+          <p class="text-sm text-blue-100 font-semibold">Sistem Informasi Presensi dan Monitoring Penggunaan Ruangan Laboratorium Komputer Berbasis QR Code</p>
           <h2 class="text-2xl md:text-3xl font-extrabold mt-2">E-Pre&Mo</h2>
           <p class="mt-1">Pendidikan Informatika</p>
         </div>
@@ -1007,7 +1007,7 @@ async function submitRoomUsage(e) {
   e.preventDefault();
 
   if (!pendingRoomQr) {
-    Swal.fire('QR Belum Ada', 'Scan QR pintu lab terlebih dahulu.', 'warning');
+    Swal.fire('QR Belum Ada', 'Scan QR ruang lab terlebih dahulu.', 'warning');
     return;
   }
 
@@ -1145,7 +1145,7 @@ async function loadPembuatanQr() {
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
           <h3 class="font-extrabold text-lg">Pembuatan QR Code</h3>
-          <p class="text-sm text-slate-500">Buat QR paten untuk pintu ruangan, meja komputer, dan login pengguna khusus.</p>
+          <p class="text-sm text-slate-500">Buat QR permanen untuk ruangan, meja komputer, dan login pengguna khusus.</p>
         </div>
         <button onclick="window.print()" class="btn btn-danger">Cetak Halaman QR</button>
       </div>
