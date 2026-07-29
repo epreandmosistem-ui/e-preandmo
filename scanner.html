@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0B3A75">
+  <link rel="manifest" href="manifest.webmanifest">
   <title>Scan QR - E-Pre&Mo</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
   <style>
@@ -47,7 +49,7 @@
       <button class="sec" onclick="submitManual()">Gunakan Kode Manual</button>
     </div>
 
-    <button onclick="window.close()">Tutup</button>
+    <button onclick="returnToApp()">Kembali ke Aplikasi</button>
   </div>
 
   <script>
@@ -74,11 +76,16 @@
       last=Date.now();
       try{
         localStorage.setItem("epremo_qr_result", JSON.stringify({value:text, source:window.currentQrSource||"camera", ts:Date.now()}));
-        setStatus("QR terdeteksi. Data tersimpan, tab akan ditutup.", "ok");
-        setTimeout(function(){ window.close(); }, 1200);
+        setStatus("QR terdeteksi. Kembali ke aplikasi...", "ok");
+        setTimeout(returnToApp, 700);
       }catch(e){
         setStatus("QR terdeteksi, tetapi gagal menyimpan hasil: " + e.message, "err");
       }
+    }
+
+    function returnToApp(){
+      stopScanner();
+      window.location.replace("./");
     }
 
     function loadCameras(){
