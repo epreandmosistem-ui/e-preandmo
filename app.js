@@ -891,7 +891,7 @@ async function loadPemesanan() {
         <div>
           <span class="booking-label">
             <i class="fa-solid fa-qrcode"></i>
-            QR Pintu Laboratorium
+            QR Ruangan Laboratorium
           </span>
 
           <button
@@ -900,7 +900,7 @@ async function loadPemesanan() {
             class="btn btn-primary w-full"
           >
             <i class="fa-solid fa-camera mr-2"></i>
-            Scan QR Pintu Lab
+            Scan QR Ruang Lab
           </button>
 
           <div
@@ -1007,7 +1007,7 @@ async function submitRoomUsage(e) {
   e.preventDefault();
 
   if (!pendingRoomQr) {
-    Swal.fire('QR Belum Ada', 'Scan QR pintu lab terlebih dahulu.', 'warning');
+    Swal.fire('QR Belum Ada', 'Scan QR ruang lab terlebih dahulu.', 'warning');
     return;
   }
 
@@ -1145,7 +1145,7 @@ async function loadPembuatanQr() {
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
           <h3 class="font-extrabold text-lg">Pembuatan QR Code</h3>
-          <p class="text-sm text-slate-500">Buat QR paten untuk pintu ruangan, meja komputer, dan login pengguna khusus.</p>
+          <p class="text-sm text-slate-500">Buat QR permanen untuk ruangan lab, meja komputer, dan login pengguna khusus.</p>
         </div>
         <button onclick="window.print()" class="btn btn-danger">Cetak Halaman QR</button>
       </div>
