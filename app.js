@@ -262,14 +262,14 @@ async function loadDashboard() {
   if (!res.success) return errorBox(wrap, res.message);
   const d = res.data;
   wrap.innerHTML = `
-    <div class="grid lg:grid-cols-[1fr_360px] gap-4 md:gap-6">
+    <div class="grid 2xl:grid-cols-[minmax(0,1fr)_360px] gap-4 md:gap-6">
       <div>
         <div class="card p-5 md:p-6 mb-4 md:mb-6 bg-gradient-to-r from-epBlue to-epBlue2 text-white">
           <p class="text-sm text-blue-100 font-semibold">Pengembangan Sistem Informasi Presensi dan Monitoring Penggunaan Ruangan Laboratorium Komputer Berbasis QR Code</p>
           <h2 class="text-2xl md:text-3xl font-extrabold mt-2">E-Pre&Mo</h2>
           <p class="mt-1">Pendidikan Informatika</p>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           ${statCard('Mahasiswa', d.mahasiswa, 'fa-user-graduate', 'text-epBlue')}
           ${statCard('Dosen', d.dosen, 'fa-user-tie', 'text-epBlue')}
           ${statCard('Ruangan Lab', d.ruangan, 'fa-building', 'text-epRed')}
